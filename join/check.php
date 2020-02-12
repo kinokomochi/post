@@ -1,6 +1,8 @@
-
-<?php 
-
+<?php //ヘッダとボディの間は空行１つはさむ 空行はヘッダの終了を意味する
+//てことは空行があるとボディ部がスタートしてしまう。
+//ボディ部＝出力＝HTMLの記述が始まったら？　print_rは出力するからボディ部→ヘッダ部の終了を意味する
+//phpのコードを書くときは、ここまではヘッダ部、ここからはボディ部、というのが分かっていないといけない？
+error_reporting(E_ALL);//ヘッダ部？
 session_start();
 require('../dbconnect.php');
 //もしこの時$_SESSION['join']に何も入ってなければ、入力画面を経ずに直接check.phpにアクセスされた可能性がある。
@@ -32,7 +34,7 @@ if(!empty($_POST)){
 <head>
 </head>
 <body>
-<form action="" mehod="post">
+<form action="" method="post">
 <input type="hidden" name="action" value="submit" />
 <dl>
     <dt>ニックネーム</dt>

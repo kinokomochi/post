@@ -1,4 +1,6 @@
 <?php 
+require('../dbconnect.php');
+//error_reporting(E_ALL);
     session_start();
     
 
@@ -22,13 +24,24 @@
         $fileName = $_FILES['image']['name'];
         if(!empty($fileName)){
             $ext = substr($fileName, -3);
-            if($ext != 'jpg' && $ext != 'gif') {
+            if($ext != 'jpg' && $ext != 'gif' && $ext != 'JPG') {
                 $error['image'] = 'type' ;
+            }
+        }
+        //入力されたメールアドレスがすでにレコードに村祭しているかどうかを取得する。件数をカウント。
+        //?に入る値は入力値
+        //1レコード文取得　WHEREで指定されている行
+        if(empty($error)){
+            $member = $db->prepare('SELECT COUNT(*) AS cnt FROM members WHERE email=?');
+            $member->execute(array($_POST['email']));
+            $record = $member->fetch();
+            if($record['cnt'] > 0){
+                $error['email'] = 'duplicate';
             }
         }
         
         if(empty($error)){
-            //画像をアップロードする
+            
             $image = date('YmdHis') . $_FILES['image']['name'];
             move_uploaded_file($_FILES['image']['tmp_name'], '../member_picture/'.$image);
             $_SESSION['join'] = $_POST;
@@ -37,6 +50,7 @@
             exit();
         }
     }
+    //cnt ASでつけた別名　つまりカウント数
     //全ての確認が終わったら、配列の中身がからか否かを確認する。
     //空ならばエラー無しで登録確認画面へ移行できる
     if($_REQUEST['action'] == 'rewrite'){
@@ -70,6 +84,9 @@
         <?php if($error['email'] == 'blank'): ?>
         <p class="error">メールアドレスを入力してください</p>
         <?php endif; ?> 
+        <?php if($error['email'] === 'duplicate'): ?>
+        <p class="error">指定されたメールアドレスはすでに登録されています。</p>
+        <?php endif; ?>
      </dd>
     <dt>パスワード<span class="required">必須</span></dt>
     <dd>
